@@ -1,0 +1,434 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}IDP - {{ document.title }}{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-10 mx-auto">
+            <!-- Document Header -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                    <h1 class="h3 mb-0">{{ document.title }}</h1>
+                    
+                    <div class="d-flex">
+                        {% if document.status == 'pending' or document.status == 'failed' %}
+                        <a href="{% url 'document_process' document.id %}" class="btn btn-success btn-sm me-2">
+                            <i class="fas fa-cogs me-1"></i> {% if document.status == 'failed' %}Retry Processing{% else %}Process{% endif %}
+                        </a>
+                        {% endif %}
+                        
+                        {% if document.extracted_text %}
+                        <a href="{% url 'document_download' document.id %}" class="btn btn-light btn-sm me-2">
+                            <i class="fas fa-download me-1"></i> Download
+                        </a>
+                        {% endif %}
+                        
+                        <a href="{% url 'document_delete' document.id %}" class="btn btn-danger btn-sm me-2">
+                            <i class="fas fa-trash-alt me-1"></i> Delete
+                        </a>
+                        
+                        <a href="{% url 'document_list' %}" class="btn btn-outline-light btn-sm">
+                            <i class="fas fa-arrow-left me-1"></i> Back
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <dl class="row mb-0">
+                                <dt class="col-sm-3">Upload Date:</dt>
+                                <dd class="col-sm-9">{{ document.uploaded_at|date:"F d, Y H:i" }}</dd>
+                                
+                                <dt class="col-sm-3">File Type:</dt>
+                                <dd class="col-sm-9">{{ document.file_type }}</dd>
+                                
+                                <dt class="col-sm-3">Status:</dt>
+                                <dd class="col-sm-9">
+                                    {% if document.status == 'pending' %}
+                                    <span class="badge bg-secondary">Pending</span>
+                                    {% elif document.status == 'processing' %}
+                                    <span class="badge bg-info">Processing</span>
+                                    {% elif document.status == 'completed' %}
+                                    <span class="badge bg-success">Completed</span>
+                                    {% elif document.status == 'failed' %}
+                                    <span class="badge bg-danger">Failed</span>
+                                    {% endif %}
+                                </dd>
+                                
+                                {% if document.processing_time %}
+                                <dt class="col-sm-3">Processing Time:</dt>
+                                <dd class="col-sm-9">{{ document.processing_time|floatformat:2 }} seconds</dd>
+                                {% endif %}
+                                
+                                {% if document.page_count > 0 %}
+                                <dt class="col-sm-3">Pages:</dt>
+                                <dd class="col-sm-9">{{ document.page_count }}</dd>
+                                {% endif %}
+                            </dl>
+                        </div>
+                        
+                        <div class="col-md-4">
+                            <div class="document-preview">
+                                <img src="{{ document.file.url }}" alt="{{ document.title }}" class="img-fluid rounded">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {% if document.description %}
+                    <div class="mt-3">
+                        <h5>Description</h5>
+                        <p>{{ document.description }}</p>
+                    </div>
+                    {% endif %}
+
+                    {% if document.status == 'failed' and analysis and analysis.summary and 'Processing failed:' in analysis.summary %}
+                    <div class="alert alert-danger mt-3">
+                        <h5><i class="fas fa-exclamation-triangle me-2"></i> Processing Failed</h5>
+                        <p>{{ analysis.summary }}</p>
+                        <div class="mt-2">
+                            <a href="{% url 'document_process' document.id %}" class="btn btn-outline-danger">
+                                <i class="fas fa-redo me-1"></i> Retry Processing
+                            </a>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Tabs Navigation -->
+            <ul class="nav nav-tabs mb-4" id="documentTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="content-tab" data-bs-toggle="tab" data-bs-target="#content" type="button" role="tab" aria-controls="content" aria-selected="true">Content</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="analysis-tab" data-bs-toggle="tab" data-bs-target="#analysis" type="button" role="tab" aria-controls="analysis" aria-selected="false">Analysis</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="entities-tab" data-bs-toggle="tab" data-bs-target="#entities" type="button" role="tab" aria-controls="entities" aria-selected="false">Entities</button>
+                </li>
+            </ul>
+            
+            <!-- Tab Content -->
+            <div class="tab-content" id="documentTabsContent">
+                <!-- Content Tab -->
+                <div class="tab-pane fade show active" id="content" role="tabpanel" aria-labelledby="content-tab">
+                    {% if document.extracted_text %}
+                    <div class="card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">Extracted Content</h5>
+                            <button class="btn btn-sm btn-outline-primary" type="button" data-bs-toggle="collapse" data-bs-target="#extractedContent">
+                                <i class="fas fa-expand-arrows-alt me-1"></i> Toggle
+                            </button>
+                        </div>
+                        <div class="collapse show" id="extractedContent">
+                            <div class="card-body">
+                                <pre class="extracted-text p-3 bg-light rounded" style="max-height: 500px; overflow-y: auto;">{{ document.extracted_text }}</pre>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        No content extracted yet. Process the document to extract text.
+                    </div>
+                    {% endif %}
+                </div>
+            
+                <!-- Analysis Tab -->
+                <div class="tab-pane fade" id="analysis" role="tabpanel" aria-labelledby="analysis-tab">
+                    {% if document.status == 'failed' and analysis and analysis.summary and 'Processing failed:' in analysis.summary %}
+                    <div class="alert alert-danger">
+                        <h5><i class="fas fa-exclamation-triangle me-2"></i> Processing Failed</h5>
+                        <p>{{ analysis.summary }}</p>
+                        <div class="mt-3">
+                            <p><strong>Possible solutions:</strong></p>
+                            <ul>
+                                <li>Check if the document format is supported</li>
+                                <li>Ensure the document contains readable text</li>
+                                <li>Try a different document format (PDF, DOCX, etc.)</li>
+                                <li>If the error persists, contact support</li>
+                            </ul>
+                            <div class="mt-2">
+                                <a href="{% url 'document_process' document.id %}" class="btn btn-outline-danger">
+                                    <i class="fas fa-redo me-1"></i> Retry Processing
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% elif analysis %}
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="mb-0">Document Analysis</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <strong>Language:</strong>
+                                </div>
+                                <div class="col-md-8">
+                                    {{ analysis.language|default:"Not detected" }}
+                                </div>
+                            </div>
+                            
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <strong>Sentiment:</strong>
+                                </div>
+                                <div class="col-md-8">
+                                    {% if analysis.sentiment_score > 0.25 %}
+                                    <span class="badge bg-success">Positive ({{ analysis.sentiment_score|floatformat:2 }})</span>
+                                    {% elif analysis.sentiment_score < -0.25 %}
+                                    <span class="badge bg-danger">Negative ({{ analysis.sentiment_score|floatformat:2 }})</span>
+                                    {% else %}
+                                    <span class="badge bg-secondary">Neutral ({{ analysis.sentiment_score|floatformat:2 }})</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            
+                            {% if analysis.summary and 'Processing failed:' not in analysis.summary %}
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <strong>Summary:</strong>
+                                </div>
+                                <div class="col-md-8">
+                                    {{ analysis.summary }}
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            {% if analysis.keyword_summary %}
+                            <div class="row mb-3">
+                                <div class="col-md-4">
+                                    <strong>Keywords:</strong>
+                                </div>
+                                <div class="col-md-8">
+                                    {% for keyword in analysis.keyword_summary.split %}
+                                    <span class="badge bg-light text-dark mb-1">{{ keyword }}</span>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if enable_advanced and analysis.groq_analysis %}
+                    <div class="card mb-4">
+                        <div class="card-header bg-primary bg-opacity-10 d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">GROQ Advanced Analysis</h5>
+                            {% if analysis.model_used %}
+                            <span class="badge bg-info">{{ analysis.model_used }}</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-4">
+                                <strong>AI Analysis:</strong>
+                                <div class="mt-2 analysis-text">
+                                    {{ analysis.groq_analysis|linebreaks }}
+                                </div>
+                            </div>
+                            
+                            {% if analysis.groq_insights %}
+                            <div class="mt-4">
+                                <strong>AI Insights:</strong>
+                                <div class="mt-2 analysis-text">
+                                    {{ analysis.groq_insights|linebreaks }}
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="card-footer bg-light">
+                            <small class="text-muted">
+                                {% if analysis.is_advanced %}
+                                <i class="fas fa-star text-warning me-1"></i> Advanced AI model used
+                                {% else %}
+                                <i class="fas fa-info-circle me-1"></i> Free AI model used
+                                {% endif %}
+                            </small>
+                        </div>
+                    </div>
+                    {% endif %}
+                    
+                    {% else %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        No analysis available. Process the document first.
+                    </div>
+                    {% endif %}
+                </div>
+                
+                <!-- Entities Tab -->
+                <div class="tab-pane fade" id="entities" role="tabpanel" aria-labelledby="entities-tab">
+                    {% if document.status == 'failed' %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        Entity extraction failed. Please retry document processing.
+                        <div class="mt-2">
+                            <a href="{% url 'document_process' document.id %}" class="btn btn-outline-warning">
+                                <i class="fas fa-redo me-1"></i> Retry Processing
+                            </a>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="card">
+                        <div class="card-header">
+                            <h5 class="mb-0">Named Entities</h5>
+                        </div>
+                        <div class="card-body">
+                            <ul class="nav nav-tabs mb-3" id="entityTypeTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="all-entities-tab" data-bs-toggle="tab" data-bs-target="#all-entities" type="button" role="tab" aria-controls="all-entities" aria-selected="true">All</button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="spacy-entities-tab" data-bs-toggle="tab" data-bs-target="#spacy-entities-tab-pane" type="button" role="tab" aria-controls="spacy-entities-tab-pane" aria-selected="false">
+                                        spaCy <span class="badge bg-secondary ms-1">{{ spacy_entities.count }}</span>
+                                    </button>
+                                </li>
+                                {% if groq_entities.exists %}
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="groq-entities-tab" data-bs-toggle="tab" data-bs-target="#groq-entities-tab-pane" type="button" role="tab" aria-controls="groq-entities-tab-pane" aria-selected="false">
+                                        GROQ <span class="badge bg-primary ms-1">{{ groq_entities.count }}</span>
+                                    </button>
+                                </li>
+                                {% endif %}
+                            </ul>
+                            
+                            <div class="tab-content" id="entityTypeContent">
+                                <div class="tab-pane fade show active" id="all-entities" role="tabpanel" aria-labelledby="all-entities-tab">
+                                    {% if spacy_entities.exists or groq_entities.exists %}
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Text</th>
+                                                    <th>Type</th>
+                                                    <th>Source</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for entity in spacy_entities %}
+                                                <tr>
+                                                    <td>{{ entity.text }}</td>
+                                                    <td>
+                                                        <span class="badge
+                                                            {% if entity.entity_type == 'person' %}bg-primary
+                                                            {% elif entity.entity_type == 'organization' %}bg-success
+                                                            {% elif entity.entity_type == 'location' %}bg-info
+                                                            {% elif entity.entity_type == 'date' %}bg-warning
+                                                            {% else %}bg-secondary{% endif %}">
+                                                            {{ entity.entity_type }}
+                                                        </span>
+                                                    </td>
+                                                    <td><span class="badge bg-secondary">spaCy</span></td>
+                                                </tr>
+                                                {% endfor %}
+                                                
+                                                {% for entity in groq_entities %}
+                                                <tr>
+                                                    <td>{{ entity.text }}</td>
+                                                    <td>
+                                                        <span class="badge
+                                                            {% if entity.entity_type == 'person' %}bg-primary
+                                                            {% elif entity.entity_type == 'organization' %}bg-success
+                                                            {% elif entity.entity_type == 'location' %}bg-info
+                                                            {% elif entity.entity_type == 'date' %}bg-warning
+                                                            {% else %}bg-secondary{% endif %}">
+                                                            {{ entity.entity_type }}
+                                                        </span>
+                                                    </td>
+                                                    <td><span class="badge bg-primary">GROQ</span></td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        No entities found. Process the document first.
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="tab-pane fade" id="spacy-entities-tab-pane" role="tabpanel" aria-labelledby="spacy-entities-tab">
+                                    {% if spacy_entities.exists %}
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Text</th>
+                                                    <th>Type</th>
+                                                    <th>Confidence</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for entity in spacy_entities %}
+                                                <tr>
+                                                    <td>{{ entity.text }}</td>
+                                                    <td>
+                                                        <span class="badge
+                                                            {% if entity.entity_type == 'person' %}bg-primary
+                                                            {% elif entity.entity_type == 'organization' %}bg-success
+                                                            {% elif entity.entity_type == 'location' %}bg-info
+                                                            {% elif entity.entity_type == 'date' %}bg-warning
+                                                            {% else %}bg-secondary{% endif %}">
+                                                            {{ entity.entity_type }}
+                                                        </span>
+                                                    </td>
+                                                    <td>{{ entity.confidence_score|floatformat:2 }}</td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-warning">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>
+                                        No spaCy entities found. Process the document first.
+                                    </div>
+                                    {% endif %}
+                                </div>
+                                
+                                {% if groq_entities.exists %}
+                                <div class="tab-pane fade" id="groq-entities-tab-pane" role="tabpanel" aria-labelledby="groq-entities-tab">
+                                    <div class="table-responsive">
+                                        <table class="table table-striped">
+                                            <thead>
+                                                <tr>
+                                                    <th>Text</th>
+                                                    <th>Type</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                {% for entity in groq_entities %}
+                                                <tr>
+                                                    <td>{{ entity.text }}</td>
+                                                    <td>
+                                                        <span class="badge
+                                                            {% if entity.entity_type == 'person' %}bg-primary
+                                                            {% elif entity.entity_type == 'organization' %}bg-success
+                                                            {% elif entity.entity_type == 'location' %}bg-info
+                                                            {% elif entity.entity_type == 'date' %}bg-warning
+                                                            {% else %}bg-secondary{% endif %}">
+                                                            {{ entity.entity_type }}
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                {% endfor %}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

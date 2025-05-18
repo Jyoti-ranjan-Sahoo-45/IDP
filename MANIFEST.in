@@ -1,0 +1,11 @@
+include README.md
+include LICENSE
+include requirements.txt
+recursive-include idp_project/static *
+recursive-include idp_project/templates *
+recursive-include idp_project/*/static *
+recursive-include idp_project/*/templates *
+recursive-include idp_project/*/migrations *.py
+prune idp_project/media
+prune *.pyc
+prune __pycache__ 

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}IDP - Home{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row align-items-center">
+        <div class="col-md-6">
+            <h1 class="display-4 fw-bold mb-4">Intelligent Document Processing</h1>
+            <p class="lead mb-4">
+                Unlock the power of your documents with our advanced OCR and NLP technology. Extract text, identify entities, and gain insights from your documents instantly.
+            </p>
+            <div class="d-grid gap-2 d-md-flex">
+                {% if user.is_authenticated %}
+                <a href="{% url 'document_upload' %}" class="btn btn-primary btn-lg px-4 me-md-2">
+                    <i class="fas fa-upload me-2"></i>Upload Document
+                </a>
+                <a href="{% url 'document_list' %}" class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="fas fa-file-invoice me-2"></i>My Documents
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}" class="btn btn-primary btn-lg px-4 me-md-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+                <a href="{% url 'about' %}" class="btn btn-outline-secondary btn-lg px-4">
+                    <i class="fas fa-info-circle me-2"></i>Learn More
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-md-6">
+            <img src="https://img.freepik.com/free-vector/document-processing-concept-illustration_114360-4579.jpg" alt="Document Processing" class="img-fluid rounded shadow">
+        </div>
+    </div>
+
+    <div class="row mt-5 pt-5">
+        <div class="col-12 text-center mb-4">
+            <h2 class="fw-bold">Powerful Features</h2>
+            <p class="lead">Our intelligent document processing system offers a wide range of capabilities</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4 text-center">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 mx-auto" style="width: 60px; height: 60px; line-height: 60px;">
+                        <i class="fas fa-file-alt fa-2x"></i>
+                    </div>
+                    <h3 class="fs-4 fw-bold">OCR Processing</h3>
+                    <p class="mb-0">Extract text from scanned documents, PDFs and images with high accuracy.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4 text-center">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 mx-auto" style="width: 60px; height: 60px; line-height: 60px;">
+                        <i class="fas fa-brain fa-2x"></i>
+                    </div>
+                    <h3 class="fs-4 fw-bold">NLP Analysis</h3>
+                    <p class="mb-0">Identify entities, analyze sentiment, and extract key information from documents.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4 text-center">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 mx-auto" style="width: 60px; height: 60px; line-height: 60px;">
+                        <i class="fas fa-chart-bar fa-2x"></i>
+                    </div>
+                    <h3 class="fs-4 fw-bold">Insights & Analytics</h3>
+                    <p class="mb-0">Get valuable insights and analytics from your processed documents.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5 pt-3">
+        <div class="col-12 text-center">
+            <h2 class="fw-bold mb-4">How It Works</h2>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-center mb-3">
+                        <div class="badge bg-primary rounded-circle p-3">1</div>
+                    </div>
+                    <h4 class="text-center">Upload</h4>
+                    <p class="text-center mb-0">Upload your document in various formats (PDF, images, text files).</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-center mb-3">
+                        <div class="badge bg-primary rounded-circle p-3">2</div>
+                    </div>
+                    <h4 class="text-center">Process</h4>
+                    <p class="text-center mb-0">Our system processes the document using OCR and NLP technology.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-center mb-3">
+                        <div class="badge bg-primary rounded-circle p-3">3</div>
+                    </div>
+                    <h4 class="text-center">Analyze</h4>
+                    <p class="text-center mb-0">Advanced algorithms extract entities and analyze the document content.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <div class="text-center mb-3">
+                        <div class="badge bg-primary rounded-circle p-3">4</div>
+                    </div>
+                    <h4 class="text-center">Results</h4>
+                    <p class="text-center mb-0">Get comprehensive results and insights from your document.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

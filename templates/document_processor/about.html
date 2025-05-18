@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+
+{% block title %}IDP - About{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <h1 class="fw-bold mb-4">About Intelligent Document Processing</h1>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">What is Intelligent Document Processing?</h2>
+                    <p>
+                        Intelligent Document Processing (IDP) is a technology that uses artificial intelligence and machine learning 
+                        to automatically extract, classify, and process information from various document formats such as PDFs, images, 
+                        emails, and more. IDP combines optical character recognition (OCR), natural language processing (NLP), and
+                        machine learning to understand document contents and extract meaningful information.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Our System's Capabilities</h2>
+                    <p>Our Intelligent Document Processing system offers a wide range of capabilities:</p>
+                    
+                    <ul class="list-group list-group-flush mt-3">
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Document OCR:</strong> Extract text from scanned documents, PDFs, and images
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Entity Recognition:</strong> Identify and extract key entities like names, organizations, dates, etc.
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Sentiment Analysis:</strong> Analyze the sentiment expressed in the document
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Keyword Extraction:</strong> Identify the most important terms in the document
+                        </li>
+                        <li class="list-group-item">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            <strong>Text Analytics:</strong> Gain insights from document contents
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Technology Stack</h2>
+                    <p>Our system is built using the following open-source technologies:</p>
+                    
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <h5>Backend</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fab fa-python me-2"></i> Python</li>
+                                <li><i class="fas fa-server me-2"></i> Django Web Framework</li>
+                                <li><i class="fas fa-database me-2"></i> MySQL Database</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>OCR & NLP</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-file-alt me-2"></i> Tesseract OCR</li>
+                                <li><i class="fas fa-code me-2"></i> spaCy for NLP</li>
+                                <li><i class="fas fa-language me-2"></i> NLTK for text processing</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <h5>Frontend</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fab fa-html5 me-2"></i> HTML5</li>
+                                <li><i class="fab fa-css3-alt me-2"></i> CSS3</li>
+                                <li><i class="fab fa-js me-2"></i> JavaScript</li>
+                                <li><i class="fab fa-bootstrap me-2"></i> Bootstrap 5</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>User Experience</h5>
+                            <ul class="list-unstyled">
+                                <li><i class="fas fa-mobile-alt me-2"></i> Responsive Design</li>
+                                <li><i class="fas fa-universal-access me-2"></i> Accessibility Features</li>
+                                <li><i class="fas fa-tachometer-alt me-2"></i> Fast Processing</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Use Cases</h2>
+                    <p>Intelligent Document Processing can be applied to numerous scenarios:</p>
+                    
+                    <div class="row mt-3">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h5><i class="fas fa-chart-line me-2 text-primary"></i> Business Analytics</h5>
+                                <p class="small">Extract insights from business documents, reports, and financial statements.</p>
+                            </div>
+                            <div class="mb-3">
+                                <h5><i class="fas fa-file-invoice me-2 text-primary"></i> Invoice Processing</h5>
+                                <p class="small">Automate data extraction from invoices and receipts.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h5><i class="fas fa-file-contract me-2 text-primary"></i> Contract Analysis</h5>
+                                <p class="small">Extract key clauses and terms from legal contracts.</p>
+                            </div>
+                            <div class="mb-3">
+                                <h5><i class="fas fa-book me-2 text-primary"></i> Research</h5>
+                                <p class="small">Process academic papers and research documents to extract insights.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}IDP - Process Document{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3 mb-0">Process Document</h1>
+                </div>
+                <div class="card-body">
+                    <div class="text-center py-3">
+                        <div class="mb-4">
+                            <img src="https://img.freepik.com/free-vector/data-processing-concept-illustration_114360-1939.jpg" alt="Document Processing" class="img-fluid rounded" style="max-height: 200px;">
+                        </div>
+                        <h2 class="h4 mb-3">{{ document.title }}</h2>
+                        <p class="mb-4">
+                            You're about to process this document using our Intelligent Document Processing technology.
+                            This will extract text, analyze content, and identify entities within your document.
+                        </p>
+                        
+                        <div class="alert alert-info mb-4">
+                            <div class="d-flex">
+                                <div class="me-3">
+                                    <i class="fas fa-info-circle fa-2x"></i>
+                                </div>
+                                <div class="text-start">
+                                    <h5>Processing includes:</h5>
+                                    <ul class="mb-0">
+                                        <li>OCR text extraction</li>
+                                        <li>Named entity recognition</li>
+                                        <li>Sentiment analysis</li>
+                                        <li>Keyword extraction</li>
+                                        {% if enable_advanced %}
+                                        <li>AI-powered document analysis</li>
+                                        {% endif %}
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <form method="post">
+                            {% csrf_token %}
+                            
+                            {% if enable_advanced %}
+                            <div class="mb-4">
+                                <div class="card border-primary">
+                                    <div class="card-header bg-primary bg-opacity-10">
+                                        <h5 class="mb-0">Processing Options</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="form-check form-switch mb-3">
+                                            <input class="form-check-input" type="checkbox" id="use_advanced" name="use_advanced">
+                                            <label class="form-check-label" for="use_advanced">Use Advanced Processing</label>
+                                        </div>
+                                        
+                                        <div id="models-info" class="mt-3" style="display:none;">
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="card h-100">
+                                                        <div class="card-header bg-light">Free Models</div>
+                                                        <div class="card-body">
+                                                            <ul class="list-group list-group-flush">
+                                                                {% for model in free_models %}
+                                                                <li class="list-group-item">{{ model }}</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-6">
+                                                    <div class="card h-100">
+                                                        <div class="card-header bg-success bg-opacity-10">Advanced Models</div>
+                                                        <div class="card-body">
+                                                            <ul class="list-group list-group-flush">
+                                                                {% for model in advanced_models %}
+                                                                <li class="list-group-item">{{ model }}</li>
+                                                                {% endfor %}
+                                                            </ul>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3 text-muted">
+                                                <small>Advanced processing uses more powerful AI models for better analysis and insights.</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                                <a href="{% url 'document_detail' document.id %}" class="btn btn-outline-secondary me-md-2">
+                                    <i class="fas fa-times me-1"></i> Cancel
+                                </a>
+                                <button type="submit" class="btn btn-primary" id="processBtn">
+                                    <i class="fas fa-cogs me-2"></i> Start Processing
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="card-footer bg-light">
+                    <div class="small text-muted">
+                        <i class="fas fa-clock me-1"></i> Processing time may vary depending on document size and complexity.
+                        {% if enable_advanced %}
+                        <br><i class="fas fa-info-circle me-1"></i> Advanced processing may take longer but provides better results.
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Form submission handling
+        const processForm = document.querySelector('form');
+        const processBtn = document.getElementById('processBtn');
+        
+        if (processForm && processBtn) {
+            processForm.addEventListener('submit', function() {
+                // Disable button and show loading state
+                processBtn.disabled = true;
+                processBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span> Processing...';
+            });
+        }
+        
+        // Advanced options handling if present
+        const useAdvancedCheckbox = document.getElementById('use_advanced');
+        const modelsInfo = document.getElementById('models-info');
+        
+        if (useAdvancedCheckbox && modelsInfo) {
+            useAdvancedCheckbox.addEventListener('change', function() {
+                if (this.checked) {
+                    modelsInfo.style.display = 'block';
+                } else {
+                    modelsInfo.style.display = 'none';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %} 
